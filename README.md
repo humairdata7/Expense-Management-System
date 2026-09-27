@@ -80,7 +80,8 @@ Expense-Management-System/
     ├── Filters.png
     ├── Reports.png
     └── Add Expense.png
-## About the Project
+
+About the Project
 
 This project was developed as a practical full-stack Python application using Flask and SQLAlchemy.
 
@@ -88,12 +89,12 @@ It demonstrates database-driven CRUD operations, search and filtering, paginatio
 
 The project combines backend development, database management, frontend design, and data visualization in a single application.
 
-## Author
+Author
 
-**Muhammad Humair**
+Muhammad Humair
 
 Python Developer & Data Analyst
 
-[GitHub](https://github.com/humairdata7)
+GitHub
 
-[Portfolio](https://humairdata7.github.io)
+Portfolio
