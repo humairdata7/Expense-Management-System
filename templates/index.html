@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Expense Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+
+<div class="app-layout">
+
+
+    <!-- ========================= -->
+    <!-- LEFT SIDEBAR -->
+    <!-- ========================= -->
+
+    <aside class="sidebar">
+
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                PKR
+            </div>
+
+            <div>
+                <h2>EXPENSE</h2>
+                <span>MANAGER</span>
+            </div>
+
+        </div>
+
+
+        <p class="sidebar-title">
+            MAIN MENU
+        </p>
+
+
+        <nav class="sidebar-menu">
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="{{ url_for('home') }}"
+                class="menu-item active"
+            >
+                <span class="menu-icon">▦</span>
+                Dashboard
+            </a>
+
+
+            <!-- EXPENSES -->
+
+            <a
+                href="{{ url_for('expenses_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">▤</span>
+                Expenses
+            </a>
+
+
+            <!-- ADD EXPENSE -->
+
+            <a
+                href="{{ url_for('add_expense_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">＋</span>
+                Add Expense
+            </a>
+
+
+            <!-- FILTERS -->
+
+            <a
+                href="{{ url_for('filters_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">⌕</span>
+                Filters
+            </a>
+
+
+            <!-- REPORTS -->
+
+            <a
+                href="{{ url_for('reports_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">◫</span>
+                Reports
+            </a>
+
+
+        </nav>
+
+
+    </aside>
+
+
+
+    <!-- ========================= -->
+    <!-- RIGHT SIDE -->
+    <!-- ========================= -->
+
+    <div class="app-main">
+
+
+        <!-- ========================= -->
+        <!-- TOP NAVBAR -->
+        <!-- ========================= -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+
+                <button
+                    class="menu-toggle"
+                    onclick="toggleSidebar()"
+                >
+                    ☰
+                </button>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+                <span class="notification">
+                    ♢
+                </span>
+
+
+                <div class="user-profile">
+
+
+                    <div class="user-avatar">
+                        A
+                    </div>
+
+
+                    <div>
+                        <strong>Admin User</strong>
+                        <span>Administrator</span>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- ========================= -->
+        <!-- PAGE CONTENT -->
+        <!-- ========================= -->
+
+        <main class="page-content">
+
+
+            <!-- DASHBOARD HEADING -->
+
+            <div class="dashboard-heading">
+
+
+                <div>
+
+                    <h1>
+                        Expense Dashboard
+                    </h1>
+
+                    <p>
+                        Overview of your expense management system
+                    </p>
+
+                </div>
+
+
+                <span class="dashboard-badge">
+                    Expense Portal
+                </span>
+
+
+            </div>
+
+
+
+            <!-- ========================= -->
+            <!-- FLASH MESSAGES -->
+            <!-- ========================= -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash-message">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+
+            <!-- ========================= -->
+            <!-- DASHBOARD STATISTICS -->
+            <!-- ========================= -->
+
+            <div class="stats-grid">
+
+
+                <!-- TOTAL EXPENSE -->
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>
+                            Total Expenses
+                        </p>
+
+                        <h3>
+                            PKR {{ "%.2f"|format(total_expense) }}
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon">
+                        PKR
+                    </div>
+
+                </div>
+
+
+
+                <!-- THIS MONTH -->
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>
+                            This Month
+                        </p>
+
+                        <h3>
+                            PKR {{ "%.2f"|format(this_month_expense) }}
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon">
+                        ◫
+                    </div>
+
+                </div>
+
+
+
+                <!-- TOTAL RECORDS -->
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>
+                            Total Records
+                        </p>
+
+                        <h3>
+                            {{ total_records }}
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon">
+                        ▤
+                    </div>
+
+                </div>
+
+
+
+                <!-- TOTAL CATEGORIES -->
+
+                <div class="stat-card">
+
+                    <div>
+
+                        <p>
+                            Categories
+                        </p>
+
+                        <h3>
+                            {{ total_categories }}
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon">
+                        ◉
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ========================= -->
+            <!-- RECENT EXPENSES -->
+            <!-- ========================= -->
+
+            <section class="table-card">
+
+
+                <div class="table-card-header">
+
+
+                    <div>
+
+                        <h2>
+                            Recent Expenses
+                        </h2>
+
+                        <p>
+                            Your latest expense records
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <a
+                            href="{{ url_for('expenses_page') }}"
+                            class="edit-btn"
+                        >
+                            View All Expenses
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+
+
+                {% if recent_expenses %}
+
+
+                <div class="table-wrapper">
+
+
+                    <table class="expense-table">
+
+
+                        <thead>
+
+                            <tr>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for expense in recent_expenses %}
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ expense.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    PKR {{ "%.2f"|format(expense.amount) }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="category-badge">
+
+                                        {{ expense.category }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ expense.date }}
+
+                                </td>
+
+
+                            </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+                {% else %}
+
+
+                <div class="empty-state">
+
+                    <h3>
+                        No expenses yet
+                    </h3>
+
+                    <p>
+                        Add your first expense to see it here.
+                    </p>
+
+                </div>
+
+
+                {% endif %}
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- FLASH MESSAGE AUTO HIDE -->
+<!-- ========================= -->
+
+<script>
+
+    setTimeout(function () {
+
+        const messages =
+            document.querySelectorAll(".flash-message");
+
+        messages.forEach(function (message) {
+
+            message.remove();
+
+        });
+
+    }, 3000);
+
+</script>
+
+
+
+<!-- ========================= -->
+<!-- SIDEBAR TOGGLE -->
+<!-- ========================= -->
+
+<script>
+
+    function toggleSidebar() {
+
+        const sidebar =
+            document.querySelector(".sidebar");
+
+
+        if (window.innerWidth <= 900) {
+
+            sidebar.classList.toggle("sidebar-open");
+
+        } else {
+
+            document.body.classList.toggle(
+                "sidebar-collapsed"
+            );
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

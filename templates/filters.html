@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Filters</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                PKR
+            </div>
+
+            <div>
+                <h2>EXPENSE</h2>
+                <span>MANAGER</span>
+            </div>
+
+        </div>
+
+        <p class="sidebar-title">
+            MAIN MENU
+        </p>
+
+        <nav class="sidebar-menu">
+
+            <a href="{{ url_for('home') }}" class="menu-item">
+                <span class="menu-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('expenses_page') }}" class="menu-item">
+                <span class="menu-icon">▤</span>
+                Expenses
+            </a>
+
+            <a href="{{ url_for('add_expense_page') }}" class="menu-item">
+                <span class="menu-icon">＋</span>
+                Add Expense
+            </a>
+
+            <a href="{{ url_for('filters_page') }}" class="menu-item active">
+                <span class="menu-icon">⌕</span>
+                Filters
+            </a>
+
+            <a href="{{ url_for('reports_page') }}" class="menu-item">
+                <span class="menu-icon">◫</span>
+                Reports
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- RIGHT SIDE -->
+    <div class="app-main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="menu-toggle"
+                    onclick="toggleSidebar()"
+                >
+                    ☰
+                </button>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="user-profile">
+
+                    <div class="user-avatar">
+                        A
+                    </div>
+
+                    <div>
+                        <strong>Admin User</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <main class="page-content">
+
+            <div class="dashboard-heading">
+
+                <div>
+                    <h1>Search & Filters</h1>
+                    <p>Find and organize your expense records</p>
+                </div>
+
+                <span class="dashboard-badge">
+                    Expense Portal
+                </span>
+
+            </div>
+
+
+            <!-- FILTER CARD -->
+            <section class="filter-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Filter Expenses</h2>
+                        <p>Search, sort and filter expense records</p>
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="GET"
+                    action="{{ url_for('filters_page') }}"
+                    class="filter-form"
+                >
+
+                    <!-- SEARCH -->
+                    <div class="filter-field">
+
+                        <label>Search</label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            placeholder="Search expense..."
+                            value="{{ search }}"
+                        >
+
+                    </div>
+
+
+                    <!-- CATEGORY -->
+                    <div class="filter-field">
+
+                        <label>Category</label>
+
+                        <select name="category">
+
+                            <option value="">
+                                All Categories
+                            </option>
+
+                            {% for item in categories %}
+
+                                <option
+                                    value="{{ item }}"
+                                    {% if category.lower() == item.lower() %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ item }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SORT -->
+                    <div class="filter-field">
+
+                        <label>Sort By</label>
+
+                        <select name="sort">
+
+                            <option value="">
+                                Default
+                            </option>
+
+                            <option
+                                value="name"
+                                {% if sort == "name" %}selected{% endif %}
+                            >
+                                Name A-Z
+                            </option>
+
+                            <option
+                                value="amount_low"
+                                {% if sort == "amount_low" %}selected{% endif %}
+                            >
+                                Amount Low to High
+                            </option>
+
+                            <option
+                                value="amount_high"
+                                {% if sort == "amount_high" %}selected{% endif %}
+                            >
+                                Amount High to Low
+                            </option>
+
+                            <option
+                                value="date"
+                                {% if sort == "date" %}selected{% endif %}
+                            >
+                                Latest Date
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- FROM DATE -->
+                    <div class="filter-field">
+
+                        <label>From Date</label>
+
+                        <input
+                            type="date"
+                            name="start_date"
+                            value="{{ start_date }}"
+                        >
+
+                    </div>
+
+
+                    <!-- TO DATE -->
+                    <div class="filter-field">
+
+                        <label>To Date</label>
+
+                        <input
+                            type="date"
+                            name="end_date"
+                            value="{{ end_date }}"
+                        >
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+                    <div class="filter-actions">
+
+                        <button type="submit">
+                            Apply Filters
+                        </button>
+
+                        <a
+                            href="{{ url_for('filters_page') }}"
+                            class="clear-filter-btn"
+                        >
+                            Clear
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- RESULTS TABLE -->
+            <section class="table-card">
+
+                <div class="table-card-header">
+
+                    <div>
+                        <h2>Filtered Results</h2>
+                        <p>Matching expense records</p>
+                    </div>
+
+                    <div class="record-count">
+                        {{ pagination.total }} Records
+                    </div>
+
+                </div>
+
+
+                {% if expenses %}
+
+                <div class="table-wrapper">
+
+                    <table class="expense-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for expense in expenses %}
+
+                            <tr>
+
+                                <td>
+                                    {{ ((pagination.page - 1) * pagination.per_page) + loop.index }}
+                                </td>
+
+                                <td>
+                                    <strong>{{ expense.name }}</strong>
+                                </td>
+
+                                <td>
+                                    PKR {{ "%.2f"|format(expense.amount) }}
+                                </td>
+
+                                <td>
+                                    <span class="category-badge">
+                                        {{ expense.category }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ expense.date }}
+                                </td>
+
+                                <td>
+
+                                    <div class="table-actions">
+
+                                        <a
+                                            href="{{ url_for('edit_expense', id=expense.id) }}"
+                                            class="edit-btn"
+                                        >
+                                            Edit
+                                        </a>
+
+                                        <a
+                                            href="{{ url_for('delete_expense', id=expense.id) }}"
+                                            class="delete-btn"
+                                            onclick="return confirm('Are you sure you want to delete this expense?')"
+                                        >
+                                            Delete
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <h3>No expenses found</h3>
+
+                        <p>
+                            Try changing your filters.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- PAGINATION -->
+            {% if pagination.pages > 1 %}
+
+            <div class="pagination">
+
+                {% if pagination.has_prev %}
+
+                    <a href="{{ url_for(
+                        'filters_page',
+                        page=pagination.prev_num,
+                        search=search,
+                        category=category,
+                        sort=sort,
+                        start_date=start_date,
+                        end_date=end_date
+                    ) }}">
+                        ‹ Previous
+                    </a>
+
+                {% endif %}
+
+
+                {% for page_num in pagination.iter_pages() %}
+
+                    {% if page_num %}
+
+                        {% if page_num == pagination.page %}
+
+                            <span class="active-page">
+                                {{ page_num }}
+                            </span>
+
+                        {% else %}
+
+                            <a href="{{ url_for(
+                                'filters_page',
+                                page=page_num,
+                                search=search,
+                                category=category,
+                                sort=sort,
+                                start_date=start_date,
+                                end_date=end_date
+                            ) }}">
+                                {{ page_num }}
+                            </a>
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <span class="pagination-dots">
+                            ...
+                        </span>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                {% if pagination.has_next %}
+
+                    <a href="{{ url_for(
+                        'filters_page',
+                        page=pagination.next_num,
+                        search=search,
+                        category=category,
+                        sort=sort,
+                        start_date=start_date,
+                        end_date=end_date
+                    ) }}">
+                        Next ›
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function toggleSidebar() {
+
+        const sidebar = document.querySelector(".sidebar");
+
+        if (window.innerWidth <= 900) {
+            sidebar.classList.toggle("sidebar-open");
+        } else {
+            document.body.classList.toggle("sidebar-collapsed");
+        }
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Edit Expense</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+
+<div class="app-layout">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                PKR
+            </div>
+
+            <div>
+                <h2>EXPENSE</h2>
+                <span>MANAGER</span>
+            </div>
+
+        </div>
+
+
+        <p class="sidebar-title">
+            MAIN MENU
+        </p>
+
+
+        <nav class="sidebar-menu">
+
+            <a
+                href="{{ url_for('home') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">▦</span>
+                Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}#expenses"
+                class="menu-item active"
+            >
+                <span class="menu-icon">▤</span>
+                Expenses
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}#add-expense"
+                class="menu-item"
+            >
+                <span class="menu-icon">＋</span>
+                Add Expense
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}#filters"
+                class="menu-item"
+            >
+                <span class="menu-icon">⌕</span>
+                Filters
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div class="app-main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="back-dashboard"
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="user-profile">
+
+                    <div class="user-avatar">
+                        A
+                    </div>
+
+                    <div>
+                        <strong>Admin User</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+
+        <main class="page-content">
+
+
+            <div class="dashboard-heading">
+
+                <div>
+                    <h1>Edit Expense</h1>
+                    <p>Update an existing expense record</p>
+                </div>
+
+                <span class="dashboard-badge">
+                    Expense Portal
+                </span>
+
+            </div>
+
+
+            <!-- FLASH MESSAGE -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash-message">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- EDIT CARD -->
+
+            <section class="expense-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Edit Expense #{{ expense.id }}</h2>
+                        <p>Change the information below and save your changes</p>
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for('edit_expense', id=expense.id) }}"
+                    class="expense-form"
+                >
+
+
+                    <div class="form-field">
+
+                        <label>Name</label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            value="{{ expense.name }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>Amount</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="amount"
+                            value="{{ expense.amount }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>Category</label>
+
+                        <input
+                            type="text"
+                            name="category"
+                            value="{{ expense.category }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>Date</label>
+
+                        <input
+                            type="date"
+                            name="date"
+                            value="{{ expense.date }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="edit-actions">
+
+                        <button type="submit">
+                            Save Changes
+                        </button>
+
+                        <a
+                            href="{{ url_for('home') }}"
+                            class="cancel-btn"
+                        >
+                            Cancel
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Expenses</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+<div class="app-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                PKR
+            </div>
+
+            <div>
+                <h2>EXPENSE</h2>
+                <span>MANAGER</span>
+            </div>
+
+        </div>
+
+
+        <p class="sidebar-title">
+            MAIN MENU
+        </p>
+
+
+        <nav class="sidebar-menu">
+
+            <!-- DASHBOARD -->
+            <a
+                href="{{ url_for('home') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">▦</span>
+                Dashboard
+            </a>
+
+
+            <!-- EXPENSES - ACTIVE PAGE -->
+            <a
+                href="{{ url_for('expenses_page') }}"
+                class="menu-item active"
+            >
+                <span class="menu-icon">▤</span>
+                Expenses
+            </a>
+
+
+            <!-- ADD EXPENSE -->
+            <a
+                href="{{ url_for('add_expense_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">＋</span>
+                Add Expense
+            </a>
+
+
+            <!-- FILTERS -->
+            <a
+                href="{{ url_for('filters_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">⌕</span>
+                Filters
+            </a>
+
+
+            <!-- REPORTS -->
+            <a
+                href="{{ url_for('reports_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">◫</span>
+                Reports
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- RIGHT SIDE -->
+    <div class="app-main">
+
+
+        <!-- TOP NAVBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="menu-toggle"
+                    onclick="toggleSidebar()"
+                >
+                    ☰
+                </button>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <span class="notification">
+                    ♢
+                </span>
+
+
+                <div class="user-profile">
+
+                    <div class="user-avatar">
+                        A
+                    </div>
+
+                    <div>
+                        <strong>Admin User</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <main class="page-content">
+
+
+            <!-- PAGE HEADING -->
+            <div class="dashboard-heading">
+
+                <div>
+                    <h1>All Expenses</h1>
+
+                    <p>
+                        View and manage your expense records
+                    </p>
+                </div>
+
+
+                <span class="dashboard-badge">
+                    Expense Portal
+                </span>
+
+            </div>
+
+
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="flash-message">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+            <section class="filter-card">
+
+    <div class="card-header">
+        <div>
+            <h2>Search Expenses</h2>
+            <p>Search expense records by name</p>
+        </div>
+    </div>
+
+    <form
+        method="GET"
+        action="{{ url_for('expenses_page') }}"
+        class="filter-form"
+    >
+
+        <div class="filter-field">
+            <label>Expense Name</label>
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Search expenses..."
+                value="{{ search }}"
+            >
+        </div>
+
+        <div class="filter-actions">
+
+            <button type="submit">
+                Search
+            </button>
+
+            {% if search %}
+                <a
+                    href="{{ url_for('expenses_page') }}"
+                    class="clear-filter-btn"
+                >
+                    Clear
+                </a>
+            {% endif %}
+
+        </div>
+
+    </form>
+
+</section>
+
+            <!-- EXPENSE TABLE -->
+            <section class="table-card">
+
+                <div class="table-card-header">
+
+                    <div>
+                        <h2>All Expenses</h2>
+                        <p>View and manage your expense records</p>
+                    </div>
+
+                    <div class="record-count">
+                        {{ pagination.total }} Records
+                    </div>
+
+                </div>
+
+
+                {% if expenses %}
+
+                <div class="table-wrapper">
+
+                    <table class="expense-table">
+
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for expense in expenses %}
+
+                            <tr>
+
+                                <td>
+                                    {{ ((pagination.page - 1) * pagination.per_page) + loop.index }}
+                                </td>
+
+                                <td>
+                                    <strong>{{ expense.name }}</strong>
+                                </td>
+
+                                <td>
+                                    PKR {{ "%.2f"|format(expense.amount) }}
+                                </td>
+
+                                <td>
+                                    <span class="category-badge">
+                                        {{ expense.category }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ expense.date }}
+                                </td>
+
+                                <td>
+
+                                    <div class="table-actions">
+
+                                        <a
+                                            href="{{ url_for('edit_expense', id=expense.id) }}"
+                                            class="edit-btn"
+                                        >
+                                            Edit
+                                        </a>
+
+                                        <a
+                                            href="{{ url_for('delete_expense', id=expense.id) }}"
+                                            class="delete-btn"
+                                            onclick="return confirm('Are you sure you want to delete this expense?')"
+                                        >
+                                            Delete
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+                        <h3>No expenses found</h3>
+                        <p>No expense records are available.</p>
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- PAGINATION -->
+            {% if pagination.pages > 1 %}
+
+            <div class="pagination">
+
+                {% if pagination.has_prev %}
+
+                    <a href="{{ url_for('expenses_page', page=pagination.prev_num) }}">
+                        ‹ Previous
+                    </a>
+
+                {% endif %}
+
+
+                {% for page_num in pagination.iter_pages() %}
+
+                    {% if page_num %}
+
+                        {% if page_num == pagination.page %}
+
+                            <span class="active-page">
+                                {{ page_num }}
+                            </span>
+
+                        {% else %}
+
+                            <a href="{{ url_for('expenses_page', page=page_num) }}">
+                                {{ page_num }}
+                            </a>
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <span class="pagination-dots">
+                            ...
+                        </span>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                {% if pagination.has_next %}
+
+                    <a href="{{ url_for('expenses_page', page=pagination.next_num) }}">
+                        Next ›
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function toggleSidebar() {
+
+        const sidebar = document.querySelector(".sidebar");
+
+        if (window.innerWidth <= 900) {
+            sidebar.classList.toggle("sidebar-open");
+        } else {
+            document.body.classList.toggle("sidebar-collapsed");
+        }
+
+    }
+
+</script>
+
+
+</body>
+</html>            

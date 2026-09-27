@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Reports</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                PKR
+            </div>
+
+            <div>
+                <h2>EXPENSE</h2>
+                <span>MANAGER</span>
+            </div>
+
+        </div>
+
+
+        <p class="sidebar-title">
+            MAIN MENU
+        </p>
+
+
+        <nav class="sidebar-menu">
+
+            <a
+                href="{{ url_for('home') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">▦</span>
+                Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('expenses_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">▤</span>
+                Expenses
+            </a>
+
+
+            <a
+                href="{{ url_for('add_expense_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">＋</span>
+                Add Expense
+            </a>
+
+
+            <a
+                href="{{ url_for('filters_page') }}"
+                class="menu-item"
+            >
+                <span class="menu-icon">⌕</span>
+                Filters
+            </a>
+
+
+            <a
+                href="{{ url_for('reports_page') }}"
+                class="menu-item active"
+            >
+                <span class="menu-icon">◫</span>
+                Reports
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- RIGHT SIDE -->
+    <div class="app-main">
+
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="menu-toggle"
+                    onclick="toggleSidebar()"
+                >
+                    ☰
+                </button>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="user-profile">
+
+                    <div class="user-avatar">
+                        A
+                    </div>
+
+                    <div>
+                        <strong>Admin User</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <main class="page-content">
+
+
+            <!-- PAGE HEADING -->
+            <div class="dashboard-heading">
+
+                <div>
+                    <h1>Expense Reports</h1>
+                    <p>Analyze your expenses by category and month</p>
+                </div>
+
+                <span class="dashboard-badge">
+                    Expense Portal
+                </span>
+
+            </div>
+
+
+            <!-- CATEGORY CHART -->
+            <section class="chart-card">
+
+                <div class="table-card-header">
+
+                    <div>
+                        <h2>Expenses by Category</h2>
+                        <p>Category-wise expense distribution</p>
+                    </div>
+
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+
+            </section>
+
+
+            <!-- CATEGORY REPORT -->
+            <section class="report-card">
+
+                <div class="table-card-header">
+
+                    <div>
+                        <h2>Category Report</h2>
+                        <p>Category-wise expense summary</p>
+                    </div>
+
+                </div>
+
+
+                {% if category_report %}
+
+                <div class="table-wrapper">
+
+                    <table class="expense-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Category</th>
+                                <th>Total Amount</th>
+                                <th>Total Expenses</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for item in category_report %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="category-badge">
+                                        {{ item[0] }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    PKR {{ "%.2f"|format(item[1]) }}
+                                </td>
+
+                                <td>
+                                    {{ item[2] }}
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <h3>No category report data found</h3>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- MONTHLY CHART -->
+            <section class="chart-card">
+
+                <div class="table-card-header">
+
+                    <div>
+                        <h2>Monthly Expense Trend</h2>
+                        <p>Track your expenses over time</p>
+                    </div>
+
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+
+            </section>
+
+
+            <!-- MONTHLY REPORT -->
+            <section class="report-card">
+
+                <div class="table-card-header">
+
+                    <div>
+                        <h2>Monthly Report</h2>
+                        <p>Month-wise expense summary</p>
+                    </div>
+
+                </div>
+
+
+                {% if month_report %}
+
+                <div class="table-wrapper">
+
+                    <table class="expense-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Month</th>
+                                <th>Total Amount</th>
+                                <th>Total Expenses</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for item in month_report %}
+
+                            <tr>
+
+                                <td>
+                                    {{ item[0] }}
+                                </td>
+
+                                <td>
+                                    PKR {{ "%.2f"|format(item[1]) }}
+                                </td>
+
+                                <td>
+                                    {{ item[2] }}
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <h3>No monthly report data found</h3>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<!-- CHART DATA -->
+
+<div
+    id="category-chart-data"
+    data-labels='{{ category_labels | tojson }}'
+    data-amounts='{{ category_amounts | tojson }}'
+    style="display: none;">
+</div>
+
+
+<div
+    id="monthly-chart-data"
+    data-labels='{{ month_labels | tojson }}'
+    data-amounts='{{ month_amounts | tojson }}'
+    style="display: none;">
+</div>
+
+
+<!-- SIDEBAR SCRIPT -->
+
+<script>
+
+    function toggleSidebar() {
+
+        const sidebar = document.querySelector(".sidebar");
+
+        if (window.innerWidth <= 900) {
+
+            sidebar.classList.toggle("sidebar-open");
+
+        } else {
+
+            document.body.classList.toggle("sidebar-collapsed");
+
+        }
+
+    }
+
+</script>
+
+
+<!-- CATEGORY CHART -->
+
+<script>
+
+    const categoryData =
+        document.getElementById("category-chart-data");
+
+    const categoryLabels = JSON.parse(
+        categoryData.dataset.labels
+    );
+
+    const categoryAmounts = JSON.parse(
+        categoryData.dataset.amounts
+    );
+
+
+    const categoryCanvas =
+        document.getElementById("categoryChart");
+
+
+    if (categoryCanvas) {
+
+        new Chart(categoryCanvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: categoryLabels,
+
+                datasets: [{
+
+                    label: "Expense Amount (PKR)",
+
+                    data: categoryAmounts
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+</script>
+
+
+<!-- MONTHLY CHART -->
+
+<script>
+
+    const monthlyData =
+        document.getElementById("monthly-chart-data");
+
+    const monthLabels = JSON.parse(
+        monthlyData.dataset.labels
+    );
+
+    const monthAmounts = JSON.parse(
+        monthlyData.dataset.amounts
+    );
+
+
+    const monthlyCanvas =
+        document.getElementById("monthlyChart");
+
+
+    if (monthlyCanvas) {
+
+        new Chart(monthlyCanvas, {
+
+            type: "line",
+
+            data: {
+
+                labels: monthLabels,
+
+                datasets: [{
+
+                    label: "Monthly Expense (PKR)",
+
+                    data: monthAmounts,
+
+                    tension: 0.3
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
