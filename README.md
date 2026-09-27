@@ -81,20 +81,4 @@ Expense-Management-System/
     ├── Reports.png
     └── Add Expense.png
 
-About the Project
 
-This project was developed as a practical full-stack Python application using Flask and SQLAlchemy.
-
-It demonstrates database-driven CRUD operations, search and filtering, pagination, dashboard analytics, expense reporting, and interactive visualizations.
-
-The project combines backend development, database management, frontend design, and data visualization in a single application.
-
-Author
-
-Muhammad Humair
-
-Python Developer & Data Analyst
-
-GitHub
-
-Portfolio
